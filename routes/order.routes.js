@@ -1,8 +1,14 @@
 const express = require('express');
+const {
+  placeOrder,
+  getMyOrders,
+  getAllOrders,
+  updateStatus,
+  mockPayment,
+} = require('../controller/order.controller');
 const { protected, isAdmin } = require('../middlewares/auth.middleware');
-const { placeOrder, getMyOrders, getAllOrders, updateStatus, mockPayment } = require('../controller/order.controller');
-const router = express.Router();
 
+const router = express.Router();
 
 /**
  * @swagger
@@ -15,7 +21,7 @@ const router = express.Router();
  * @swagger
  * /order:
  *   post:
- *     summary: Add product to card
+ *     summary: Place a new order
  *     tags:
  *       - Order
  *     security:
@@ -28,54 +34,63 @@ const router = express.Router();
  *             type: object
  *             properties:
  *               shippingInfo:
- *                 type: string
- *                 address: {type: string}
- *                 city: {type: string}
- *                 state: {type: string}
- *                 country: {type: string}
+ *                 type: object
+ *                 properties:
+ *                   address:
+ *                     type: string
+ *                   city:
+ *                     type: string
+ *                   state:
+ *                     type: string
+ *                   country:
+ *                     type: string
  *     responses:
  *       201:
- *         description: orders placedq
+ *         description: Order placed successfully
+ *       400:
+ *         description: Invalid input
  */
-
 router.post('/', protected, placeOrder);
-
 
 /**
  * @swagger
  * /order/my-orders:
  *   get:
- *     summary: list of my orders
+ *     summary: Get current user's orders
  *     tags:
  *       - Order
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: order retrive sucessfully
+ *         description: Orders retrieved successfully
+ *       404:
+ *         description: No orders found
  */
-router.get('/my-orders',protected, getMyOrders);
+router.get('/my-orders', protected, getMyOrders);
+
 /**
  * @swagger
  * /order/all-orders:
  *   get:
- *     summary: list of all orders
+ *     summary: Get all orders (admin only)
  *     tags:
  *       - Order
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: order retrive sucessfully
+ *         description: All orders retrieved successfully
+ *       403:
+ *         description: Unauthorized access
  */
-router.get('/all-orders',protected, isAdmin, getAllOrders);
-
+router.get('/all-orders', protected, isAdmin, getAllOrders);
 
 /**
  * @swagger
  * /order:
  *   put:
- *     summary: Update Order Status
+ *     summary: Update order status (admin only)
  *     tags:
  *       - Order
  *     security:
@@ -92,26 +107,34 @@ router.get('/all-orders',protected, isAdmin, getAllOrders);
  *               status:
  *                 type: string
  *     responses:
- *       201:
- *         description: product is updated
+ *       200:
+ *         description: Order status updated
  *       404:
- *         description: product not found
+ *         description: Order not found
  */
 router.put('/', protected, isAdmin, updateStatus);
 
-
 /**
  * @swagger
- * /order/mock-payment/:orderId:
+ * /order/mock-payment/{orderId}:
  *   get:
- *     summary: list of all orders
+ *     summary: Simulate payment for an order
  *     tags:
  *       - Order
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: orderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the order to simulate payment for
  *     responses:
  *       200:
- *         description: order retrive sucessfully
+ *         description: Payment simulated successfully
+ *       404:
+ *         description: Order not found
  */
 router.get('/mock-payment/:orderId', protected, mockPayment);
 

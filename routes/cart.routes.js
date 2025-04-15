@@ -1,8 +1,13 @@
 const express = require('express');
-const { protected, isAdmin } = require('../middlewares/auth.middleware');
-const { addToCart, updateCartItem, removeCartItem, getCart } = require('../controller/cart.controller');
-const router = express.Router();
+const {
+  addToCart,
+  updateCartItem,
+  removeCartItem,
+  getCart,
+} = require('../controller/cart.controller');
+const { protected } = require('../middlewares/auth.middleware');
 
+const router = express.Router();
 
 /**
  * @swagger
@@ -15,7 +20,7 @@ const router = express.Router();
  * @swagger
  * /cart:
  *   post:
- *     summary: Add product to card
+ *     summary: Add product to cart
  *     tags:
  *       - Cart
  *     security:
@@ -30,21 +35,20 @@ const router = express.Router();
  *               productId:
  *                 type: string
  *               quantity:
- *                 type: string
+ *                 type: number
  *     responses:
  *       201:
- *         description: items added to cart
+ *         description: Item added to cart
  *       404:
- *         description: product not found
+ *         description: Product not found
  */
-
 router.post('/', protected, addToCart);
 
 /**
  * @swagger
  * /cart:
  *   put:
- *     summary: updated product cart
+ *     summary: Update product quantity in cart
  *     tags:
  *       - Cart
  *     security:
@@ -59,32 +63,38 @@ router.post('/', protected, addToCart);
  *               productId:
  *                 type: string
  *               quantity:
- *                 type: string
+ *                 type: number
  *     responses:
- *       201:
- *         description: items updated in cart
+ *       200:
+ *         description: Cart item updated
  *       404:
- *         description: cart not found
+ *         description: Cart or product not found
  */
 router.put('/', protected, updateCartItem);
 
-
 /**
  * @swagger
- * /cart/:productId:
- *   get:
- *     summary: remove item cart
+ * /cart/{productId}:
+ *   delete:
+ *     summary: Remove item from cart
  *     tags:
  *       - Cart
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the product to remove
  *     responses:
  *       200:
- *         description: item remove successfully
+ *         description: Item removed successfully
+ *       404:
+ *         description: Item not found in cart
  */
-
-router.get('/:productId', protected, removeCartItem);
-
+router.delete('/:productId', protected, removeCartItem);
 
 /**
  * @swagger
@@ -97,7 +107,9 @@ router.get('/:productId', protected, removeCartItem);
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: Cart retrived
+ *         description: Cart retrieved successfully
+ *       404:
+ *         description: Cart not found
  */
 router.get('/', protected, getCart);
 

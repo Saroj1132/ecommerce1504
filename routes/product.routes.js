@@ -1,9 +1,15 @@
 const express = require('express');
+const {
+  createProduct,
+  updateProduct,
+  getProducts,
+  getProduct,
+  deleteProduct,
+} = require('../controller/product.controller');
 const { protected, isAdmin } = require('../middlewares/auth.middleware');
-const { createProduct, updateProduct, getProducts, getProduct, deleteProduct } = require('../controller/product.controller');
 const upload = require('../middlewares/upload.middleware');
-const router = express.Router();
 
+const router = express.Router();
 
 /**
  * @swagger
@@ -39,62 +45,74 @@ const router = express.Router();
  *               stock:
  *                 type: number
  *               images:
- *                 { type: array, items: {type: string, format-binary}}
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
  *     responses:
  *       201:
- *         description: product created
+ *         description: Product created
  */
-
 router.post('/', protected, isAdmin, upload.array('images'), createProduct);
 
 /**
  * @swagger
  * /product:
  *   get:
- *     summary: get all products
+ *     summary: Get all products
  *     tags:
  *       - Products
- *     security:
- *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of products
  */
-router.get('/', getProducts)
-
+router.get('/', getProducts);
 
 /**
  * @swagger
- * /product/:id:
+ * /product/{id}:
  *   get:
- *     summary: get singlw products
+ *     summary: Get single product by ID
  *     tags:
  *       - Products
- *     security:
- *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
  *     responses:
  *       200:
- *         description: List of products
+ *         description: Product details
+ *       404:
+ *         description: Product not found
  */
-
-router.get('/:id', getProduct)
-
+router.get('/:id', getProduct);
 
 /**
  * @swagger
- * /product/:id:
+ * /product/{id}:
  *   delete:
- *     summary: delete product
+ *     summary: Delete product by ID
  *     tags:
  *       - Products
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Product ID
  *     responses:
  *       200:
- *         description: List of products
+ *         description: Product deleted
+ *       404:
+ *         description: Product not found
  */
-router.delete('/:id', protected, isAdmin, deleteProduct)
-
+router.delete('/:id', protected, isAdmin, deleteProduct);
 
 /**
  * @swagger
@@ -112,6 +130,8 @@ router.delete('/:id', protected, isAdmin, deleteProduct)
  *           schema:
  *             type: object
  *             properties:
+ *               id:
+ *                 type: string
  *               name:
  *                 type: string
  *               description:
@@ -123,12 +143,15 @@ router.delete('/:id', protected, isAdmin, deleteProduct)
  *               stock:
  *                 type: number
  *               images:
- *                 { type: array, items: {type: string, format-binary}}
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
  *     responses:
- *       201:
- *         description: product is updated
+ *       200:
+ *         description: Product updated
  *       404:
- *         description: product not found
+ *         description: Product not found
  */
 router.put('/', protected, isAdmin, upload.array('images'), updateProduct);
 

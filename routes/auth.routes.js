@@ -35,7 +35,6 @@ const router = express.Router();
  *       400:
  *         description: Email already exists
  */
-
 router.post('/signup', register);
 
 /**
@@ -57,10 +56,10 @@ router.post('/signup', register);
  *               password:
  *                 type: string
  *     responses:
- *       201:
- *         description: User Registered
+ *       200:
+ *         description: User Logged In
  *       400:
- *         description: email and password is incorrect
+ *         description: Email or password is incorrect
  */
 router.post('/login', login);
 
