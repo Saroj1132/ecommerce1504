@@ -62,6 +62,17 @@ router.post('/', protected, isAdmin, upload.array('images'), createProduct);
  *     summary: Get all products
  *     tags:
  *       - Products
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Filter products by category
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search products by name (case-insensitive)
  *     responses:
  *       200:
  *         description: List of products
@@ -130,7 +141,7 @@ router.delete('/:id', protected, isAdmin, deleteProduct);
  *           schema:
  *             type: object
  *             properties:
- *               id:
+ *               productId:
  *                 type: string
  *               name:
  *                 type: string
